@@ -1,9 +1,13 @@
 # ArchievesCenter
 
-#### Description
-档案中心
+## Description
 
-#### Software Architecture
+* 本项目是无锡市软测认证有限公司的档案服务
+* 项目基于Node.js，只需要一个可信的文件系统即可运行
+* 目前选用ClusterFS作为可信文件系统
+
+## Software Architecture
+
 Software architecture description
 
 #### Installation
@@ -18,7 +22,7 @@ Software architecture description
 2.  xxxx
 3.  xxxx
 
-#### Contribution
+## Contribution
 
 1.  Fork the repository
 2.  Create Feat_xxx branch
@@ -26,7 +30,7 @@ Software architecture description
 4.  Create Pull Request
 
 
-#### Gitee Feature
+## Gitee Feature
 
 1.  You can use Readme\_XXX.md to support different languages, such as Readme\_en.md, Readme\_zh.md
 2.  Gitee blog [blog.gitee.com](https://blog.gitee.com)
