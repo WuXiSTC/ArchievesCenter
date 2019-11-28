@@ -1,0 +1,17 @@
+*/etc/glusterfs/*
+!*/etc/glusterfs
+
+*/var/lib/glusterd/*
+!*/var/lib/glusterd
+
+*/var/log/glusterfs/*
+!*/var/log/glusterfs
+
+*/srv/glusterfs/*
+!*/srv/glusterfs
+
+*/sys/fs/cgroup/*
+!*/sys/fs/cgroup
+
+*/dev/*
+!*/dev

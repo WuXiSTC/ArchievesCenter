@@ -1,0 +1,4 @@
+.idea
+.git
+_*
+node_modules/

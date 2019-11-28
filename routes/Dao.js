@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 const crypto = require('crypto');
+const dir = process.env.npm_config_dir ? process.env.npm_config_dir : process.cwd();
+console.log("文件存放目录：" + dir);
 
 function PipeStream(readStream, writeStream) {//将一个读取流pipe到写入流，并计算MD5
     const md5Stream = crypto.createHash('md5');
@@ -40,7 +42,7 @@ function dirResolve(filename) {//解决文件目录不存在的问题
 }
 
 exports.RecvFile = (filename, readStream) => {//流式接收文件
-    let fileName = path.join(process.cwd(), filename);
+    let fileName = path.join(dir, filename);
     dirResolve(fileName);
     return new Promise((resolve, reject) => {
         if (fs.existsSync(fileName))
@@ -57,7 +59,7 @@ exports.RecvFile = (filename, readStream) => {//流式接收文件
 };
 
 exports.SendFile = (filename, writeStream) => {//流式发送文件
-    let fileName = path.join(process.cwd(), filename);
+    let fileName = path.join(dir, filename);
     return new Promise((resolve, reject) => {
         if (!fs.existsSync(fileName))
             return reject("发送错误:" + fileName + "不存在");
