@@ -29,11 +29,6 @@ if [ ! -n "${DATA_DIR}" ]; then
     echo "DATA_DIR was set to default value: ${GLUSTERFS_VOLUME}"
 fi
 
-chmod a+rw ${DATA_DIR}
-chmod a+rw /etc/glusterfs
-chmod a+rw /var/lib/glusterd
-chmod a+rw /var/log/glusterfs
-
 echo "Your uploaded files will stored in ${DATA_DIR}"
 cd ${APP_DIR}
 npm start --dir=${DATA_DIR}
