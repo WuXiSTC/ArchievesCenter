@@ -13,4 +13,4 @@ EXPOSE 3000
 RUN mkdir ${DATA_DIR} && chmod a+rw ${DATA_DIR}
 VOLUME [ ${DATA_DIR} ]
 
-CMD [ ${APP_DIR}/start.sh ]
+CMD [ "sh", "-c", "${APP_DIR}/start.sh" ]

@@ -1,15 +1,17 @@
+#! /bin/bash
+
 if [ -n "${GLUSTERFS_SERVER_ADDR}" ]; then
     #如果设置了GLUSTERFS_SERVER_ADDR那就开始进行GlusterFS的配置
 
     if [ ! -n "${GLUSTERFS_VOLUME}" ]; then
         #首先设置GLUSTERFS_VOLUME
-        GLUSTERFS_VOLUME="/"
+        export GLUSTERFS_VOLUME="/"
         echo "GLUSTERFS_VOLUME was set to default value: ${GLUSTERFS_VOLUME}"
     fi
 
     if [ ! -n "${GLUSTERFS_MOUNTDIR}" ]; then
         #然后设置GLUSTERFS_MOUNTDIR
-        GLUSTERFS_MOUNTDIR="/data"
+        export GLUSTERFS_MOUNTDIR="/data"
         echo "GLUSTERFS_MOUNTDIR was set to default value: ${GLUSTERFS_MOUNTDIR}"
     fi
 
@@ -26,6 +28,11 @@ if [ ! -n "${DATA_DIR}" ]; then
     DATA_DIR="${GLUSTERFS_VOLUME}"
     echo "DATA_DIR was set to default value: ${GLUSTERFS_VOLUME}"
 fi
+
+chmod a+rw ${DATA_DIR}
+chmod a+rw /etc/glusterfs
+chmod a+rw /var/lib/glusterd
+chmod a+rw /var/log/glusterfs
 
 echo "Your uploaded files will stored in ${DATA_DIR}"
 cd ${APP_DIR}
