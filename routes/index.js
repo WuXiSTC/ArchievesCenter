@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-const Dao = require('./Dao');
+const Dao = require('./Dao/index');
 
 function valid_filename(filename) {
     if (filename.length < 1) return false;
@@ -41,7 +41,8 @@ router.get('/*', async function (req, res, next) {
         return res.end()
     } catch (e) {
         console.log(e);
-        res.sendStatus(404);
+        res.statusCode = 404;
+        res.end(e.toString());
     }
 });
 
@@ -54,8 +55,15 @@ router.put('/*', async function (req, res, next) {
         return res.end(md5)
     } catch (e) {
         console.log(e);
-        res.sendStatus(500);
+        res.statusCode = 500;
+        res.end(e.toString());
     }
 });
 
+router.post('/*', function (req, res, next) {
+
+});
+
 module.exports = router;
+
+//TODO:ListDir模块显示文件目录
