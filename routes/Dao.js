@@ -58,12 +58,14 @@ exports.RecvFile = (filename, readStream) => {//流式接收文件
     });
 };
 
-exports.SendFile = (filename, writeStream) => {//流式发送文件
+exports.SendFile = (filename, writeStream, start, end) => {//流式发送文件
     let fileName = path.join(dir, filename);
     return new Promise((resolve, reject) => {
         if (!fs.existsSync(fileName))
             return reject("发送错误:" + fileName + "不存在");
-        let readStream = fs.createReadStream(fileName);
+        let readStream = null;
+        if (isNaN(start) || isNaN(end)) readStream = fs.createReadStream(fileName);
+        else readStream = fs.createReadStream(fileName, {start, end});
         PipeStream(readStream, writeStream)
             .then((md5) => {
                 return resolve(md5)
