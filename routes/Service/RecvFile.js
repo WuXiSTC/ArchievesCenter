@@ -1,10 +1,11 @@
 const fs = require("fs");
 const path = require("path");
-const dirResolve = require("./tools/dirResolve");
-const PipeStream = require("./tools/PipeStream");
-const pathStats = require("./tools/pathStats");
-const dir = require("./tools/config").dir;
-const valid_filename = require('./tools/valid_filename');
+const dir = require("./config").dir;
+const Dao = require("../Dao/index");
+const pathStats = Dao.pathStats;
+const valid_filename = Dao.valid_filename;
+const dirResolve = Dao.dirResolve;
+const PipeStream = Dao.PipeStream;
 
 
 async function RecvFile(filename, readStream) {//流式接收文件
@@ -18,9 +19,9 @@ async function RecvFile(filename, readStream) {//流式接收文件
     return new Promise(async (resolve, reject) => {
         //不存在才能写入
         let writeStream = fs.createWriteStream(fileName);
-        PipeStream(readStream, writeStream)
-            .then((md5) => {
-                return resolve(md5)
+        PipeStream(readStream, writeStream, ['md5', 'sha1', 'sha256', 'sha512'])
+            .then((hashs) => {
+                return resolve(hashs)//返回值为各类hash值
             })
             .catch((err) => {
                 return reject(err)

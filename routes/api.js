@@ -1,7 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-const Dao = require('./Dao/index');
+const Service = require('./Service/index');
+const SendFile = Service.SendFile;
+const RecvFile = Service.RecvFile;
 
 function get_range_from_req(req) {
     let range = req.headers['range'];
@@ -22,14 +24,13 @@ router.get('/*', async function (req, res, next) {
         let md5 = '';
         if (!range) {
             res.statusCode = 200;
-            md5 = await Dao.SendFile(filename, res);
+            md5 = JSON.stringify(await SendFile(filename, res));
             console.log("Got: " + filename + " from start to end and its md5 is " + md5);
         } else {
             res.statusCode = 206;
-            md5 = await Dao.SendFile(filename, res, range[0], range[1]);
+            md5 = await SendFile(filename, res, range[0], range[1]);
             console.log("Got: " + filename + " from " + range[0] + " to " + range[1] + " and its md5 is " + md5);
         }
-
         return res.end()
     } catch (e) {
         res.statusCode = 404;
@@ -40,10 +41,10 @@ router.get('/*', async function (req, res, next) {
 router.post('/*', async function (req, res, next) {
     let filename = req.params[0];
     try {
-        let md5 = await Dao.RecvFile(filename, req);
-        console.log("Put: " + filename + " and its md5 is " + md5);
+        let hashs = JSON.stringify(await RecvFile(filename, req));
+        console.log("Put: " + filename + " and its checksum is " + hashs);
         res.statusCode = 200;
-        return res.end(md5)
+        return res.end(hashs)
     } catch (e) {
         res.statusCode = 409;
         res.end(e.toString());

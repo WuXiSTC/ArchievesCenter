@@ -23,7 +23,7 @@ async function mkdirs(p) {//递归创建文件夹
     });
 }
 
-function dirResolve(filename) {//解决文件目录不存在的问题
+function dirResolve(filename) {//解决文件目录不存在的问题（递归创建目录）
     return mkdirs(path.dirname(filename));
 }
 

@@ -56,11 +56,15 @@ docker run --rm -it -p 3000:3000 -v /your/path/to/data:/data archieves_center np
 
 ### 启用GlusterFS
 
+-------------TODO:GlusterFS部署暂时未完成，以下安装过程并不是最终方案-------------
+
 **一个直接使用官方镜像的配置案例可见`_test`文件夹**
 
 #### 首先要启动至少一个GlusterFS服务端
 
 要启用GlusterFS，必须先有至少一个服务端，服务端和集群的具体配置方式可见[官方Docker hub](https://hub.docker.com/r/gluster/glusterfs-client)
+
+或者使用[一个安装脚本](https://hub.docker.com/repository/docker/yindaheng98/glusterfs-server)
 
 #### 然后才能启动GlusterFS客户端
 
@@ -86,11 +90,33 @@ npm start --dir=${DATA_DIR}
 
 客户端的Node应用启动方法和不启用GlusterFS时相同，不同的是在运行`npm start`之前要先挂载一个GlusterFS虚拟卷，并用`npm start --dir=XXX`指定文件存储目录为挂载的虚拟卷。客户端挂载虚拟卷的方法可见[官方教程](https://docs.gluster.org/en/latest/Administrator%20Guide/Setting%20Up%20Clients#manually-mounting-volumes)。
 
-#### Instructions
+## Instructions
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+### 接口标准
+
+#### 文件目录接口
+
+文件目录接口返回指定目录下的文件和文件夹列表：
+
+`GET /index/[文件路径]`
+
+返回值为一个JSON字符串：
+
+```json
+[[子目录列表],[文件列表]]
+```
+
+#### 文件操作接口
+
+* 上传文件接口：`POST /api/[文件路径]`，请求体为二进制格式，以二进制流的方式直接传送文件
+  * 失败返回409和错误信息
+  * 成功返回200和MD5码
+* 下载文件接口：`GET /api/[文件路径]`，请求体啥都不需要
+  * 失败返回404
+  * 成功返回206并以二进制流的形式返回文件内容
+* 部分下载接口：`GET /api/[文件路径]`支持断点续传，请求体中加上`bytes=[起点]-[终点]`即可
+  * 失败返回404
+  * 成功返回206并以二进制流的形式返回文件内容
 
 ## Contribution
 

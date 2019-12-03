@@ -1,9 +1,10 @@
 const fs = require("fs");
 const path = require("path");
-const PipeStream = require("./tools/PipeStream");
-const pathStats = require("./tools/pathStats");
-const dir = require("./tools/config").dir;
-const valid_filename = require('./tools/valid_filename');
+const dir = require("./config").dir;
+const Dao = require("../Dao/index");
+const pathStats = Dao.pathStats;
+const valid_filename = Dao.valid_filename;
+const PipeStream = Dao.PipeStream;
 
 
 async function SendFile(filename, writeStream, start, end) {//流式发送文件
@@ -17,9 +18,9 @@ async function SendFile(filename, writeStream, start, end) {//流式发送文件
         let readStream = null;
         if (isNaN(start) || isNaN(end)) readStream = fs.createReadStream(fileName);
         else readStream = fs.createReadStream(fileName, {start, end});
-        PipeStream(readStream, writeStream)
-            .then((md5) => {
-                return resolve(md5)
+        PipeStream(readStream, writeStream, ['md5'])
+            .then((hashs) => {
+                return resolve(hashs)//返回值为各类hash值
             })
             .catch((err) => {
                 return reject(err)

@@ -1,11 +1,12 @@
 const fs = require("fs");
 const path = require("path");
-const pathStats = require("./tools/pathStats");
-const dir = require("./tools/config").dir;
-const valid_filename = require('./tools/valid_filename');
+const dir = require("./config").dir;
+const Dao = require("../Dao/index");
+const pathStats = Dao.pathStats;
+const valid_filename = Dao.valid_filename;
 
 
-async function ListDir(dirname) {
+async function ListDir(dirname) {//返回dirname目录下的文件和文件夹
     if (!valid_filename(dirname)) throw new Error("非法路径名:" + dirname);
     let dirName = path.join(dir, dirname);
     let stats = await pathStats(dirName);
@@ -22,7 +23,7 @@ async function ListDir(dirname) {
                     else if (stats.isFile()) list[1].push(files[i]);
                 }
             }
-            resolve(list);
+            resolve(list);//返回值为[[文件夹列表],[文件列表]]
         })
     })
 }
