@@ -2,9 +2,11 @@ const fs = require("fs");
 const path = require("path");
 const pathStats = require("./tools/pathStats");
 const dir = require("./tools/config").dir;
+const valid_filename = require('./tools/valid_filename');
 
 
-exports.ListDir = async (dirname) => {
+async function ListDir(dirname) {
+    if (!valid_filename(dirname)) throw new Error("非法路径名:" + dirname);
     let dirName = path.join(dir, dirname);
     let stats = await pathStats(dirName);
     return new Promise((resolve, reject) => {
@@ -13,14 +15,16 @@ exports.ListDir = async (dirname) => {
         fs.readdir(dirName, async (err, files) => {//遍历目标文件夹
             if (err) return reject(err);
             let list = [[], []];//子文件夹放0，文件放1
-            for (let file in files) {
-                let stats = await pathStats(file);
+            for (let i in files) {
+                let stats = await pathStats(path.join(dirName, files[i]));
                 if (stats !== null) {
-                    if (stats.isDirectory()) list[0].push(file);
-                    else if (stats.isFile()) list[1].push(file);
+                    if (stats.isDirectory()) list[0].push(files[i]);
+                    else if (stats.isFile()) list[1].push(files[i]);
                 }
             }
             resolve(list);
         })
     })
-};
+}
+
+module.exports = ListDir;

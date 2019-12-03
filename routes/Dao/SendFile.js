@@ -3,8 +3,11 @@ const path = require("path");
 const PipeStream = require("./tools/PipeStream");
 const pathStats = require("./tools/pathStats");
 const dir = require("./tools/config").dir;
+const valid_filename = require('./tools/valid_filename');
+
 
 async function SendFile(filename, writeStream, start, end) {//流式发送文件
+    if (!valid_filename(filename)) throw new Error("非法路径名:" + filename);
     let fileName = path.join(dir, filename);
     let stats = await pathStats(fileName);
     if (stats === null || !stats.isFile())
