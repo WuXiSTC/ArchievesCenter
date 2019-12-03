@@ -22,6 +22,14 @@
   * GlusterFS服务端的封装
   * 与客户端通信，提供文件存储服务
 
+### 客户端架构
+
+客户端主要分Dao、Service和Controller三层：
+
+* Dao：包含路径校验、获取文件状态、创建文件夹、流式计算校验码等各种文件操作以及连接数据库、写入和查找校验数据等数据库操作
+* Service：用Dao中的文件和数据库操作构建主要业务逻辑，即文件的上传、下载和列举文件目录
+* Controller：封装Service，提供网络接口
+
 ## Installation
 
 * 文件存放路径由`process.env.npm_config_dir`获得，即被上传的文件存放在`npm start --dir=XX`命令行参数指定的文件目录下（具体情况请自行搜索`process.env.npm_config_*`）。若没有命令行参数，则默认为`process.cwd()`。
