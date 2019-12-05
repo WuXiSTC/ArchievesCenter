@@ -1,1 +1,1 @@
-//TODO:连接PIKA数据库
+const redis= require("redis");
