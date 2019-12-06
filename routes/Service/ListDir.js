@@ -2,8 +2,8 @@ const fs = require("fs");
 const path = require("path");
 const dir = require("./config").dir;
 const Dao = require("../Dao/index");
-const pathStats = Dao.pathStats;
-const valid_filename = Dao.valid_filename;
+const pathStats = Dao.PathStats;
+const valid_filename = Dao.ValidFilename;
 
 
 async function ListDir(dirname) {//返回dirname目录下的文件和文件夹
