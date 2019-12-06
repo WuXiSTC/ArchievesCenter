@@ -1,6 +1,6 @@
 /**
- * wchain
- * 一个流式中间件调用框架*/
+ * wchain-一个流式中间件调用框架
+ * TODO:文档——建议的中间件定义方法：使用一个函数返回中间件，固定的参数放外层函数，运行时变动的参数用meta传递*/
 
 const events = require("events");
 const StreamFaucet = require("./StreamFaucet");
@@ -102,7 +102,7 @@ module.exports = function (options = OptionList) {
     };
 
 
-    wchain.middlewares = [];//中间件列表
+    let middlewares = [];//中间件列表
 
     /**
      * 添加一个中间件，中间件将按use的先后顺序被调用
@@ -116,7 +116,7 @@ module.exports = function (options = OptionList) {
      * @param middleware 要添加的中间件
      */
     wchain.use = (middleware) => {
-        wchain.middlewares.push(middleware)
+        middlewares.push(middleware)
     };
 
     /**
@@ -129,9 +129,9 @@ module.exports = function (options = OptionList) {
         //运行，按use的先后顺序调用中间件并传递触发器，其中的meta立即返回
         //chain是用于组装中间件调用链的循环变量
         let chain = next;//调用链的末尾是下一个调用链
-        for (let i = wchain.middlewares.length - 1; i >= 0; i++) {
+        for (let i = middlewares.length - 1; i >= 0; i++) {
             //从调用链的末尾开始依次构造调用链（一级一级地定义流的流动顺序）
-            let middleware = wchain.middlewares[i];
+            let middleware = middlewares[i];
             chain = (processedStream) => {
                 if (options.pause_at_begin && processedStream instanceof Readable) {//如果需要在一开始就停止
                     //那就在每一层中间加一个暂停的水龙头
