@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const pathStats = require("./pathStats");
+const pathStats = require("./PathStats");
 
 async function mkdirs(p) {//递归创建文件夹
     return new Promise(async (resolve, reject) => {
@@ -23,8 +23,8 @@ async function mkdirs(p) {//递归创建文件夹
     });
 }
 
-function dirResolve(filename) {//解决文件目录不存在的问题（递归创建目录）
+function DirResolve(filename) {//解决文件目录不存在的问题（递归创建目录）
     return mkdirs(path.dirname(filename));
 }
 
-module.exports = dirResolve;
+module.exports = DirResolve;

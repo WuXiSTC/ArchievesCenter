@@ -1,4 +1,4 @@
-function valid_filename(filename) {//判断文件名是否合法
+function ValidFilename(filename) {//判断文件名是否合法
     if (filename.length < 1) return false;
     filename = filename.replace('\\', '/');
     if (filename[0] === '/') return false;
@@ -6,4 +6,4 @@ function valid_filename(filename) {//判断文件名是否合法
     return true
 }
 
-module.exports = valid_filename;
+module.exports = ValidFilename;

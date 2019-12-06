@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-function pathStats(path) {//获取文件或文件夹的stat，如果文件不存在则返回null
+function PathStats(path) {//获取文件或文件夹的stat，如果文件不存在则返回null
     return new Promise((resolve, reject) => {
         fs.stat(path, (err, stats) => {
             if (err) {//如果出错
@@ -13,4 +13,4 @@ function pathStats(path) {//获取文件或文件夹的stat，如果文件不存
     })
 }
 
-module.exports = pathStats;
+module.exports = PathStats;
