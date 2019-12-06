@@ -50,11 +50,11 @@ module.exports = function (options = OptionList) {
     function run(meta, stream, next = () => null) {
         //运行，按use的先后顺序调用中间件并传递触发器，其中的meta为待处理的非流式数据
         //chain是用于组装中间件调用链的循环变量
-        let chain = () => null;//调用链的末尾是下一个调用链
+        let chain = [];
+        chain[middlewares.length] = next;//调用链的末尾是下一个调用链
         for (let i = middlewares.length - 1; i >= 0; i--) {
             //从调用链的末尾开始依次构造调用链（一级一级地定义流的流动顺序）
-            let middleware = middlewares[i];
-            chain = (processedStream) => {
+            chain[i] = (processedStream) => {
                 if (options.pause_at_begin && processedStream instanceof Readable) {//如果需要在一开始就停止
                     //那就在每一层中间加一个暂停的水龙头
                     let faucet = new StreamFaucet();
@@ -62,11 +62,10 @@ module.exports = function (options = OptionList) {
                     processedStream.pipe(faucet);
                     processedStream = faucet;
                 }
-                middleware(meta, processedStream, next, wchain.emitter);
-                next = chain;
-            }
+                middlewares[i](meta, processedStream, chain[i + 1], wchain.emitter);
+            };
         }
-        chain(stream);
+        chain[0](stream);
     }
 
 
