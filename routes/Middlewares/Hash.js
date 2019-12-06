@@ -33,7 +33,7 @@ function Hash(encoding, meta_name = "hash") {
         }
         stream.on('end', function () {
             let hashResults = [];
-            for (let hashStream in hashStreams)
+            for (let hashStream of hashStreams)
                 hashResults.push(hashStream.digest(encoding));
             meta.onFinish(hashResults);
         });

@@ -28,10 +28,11 @@ function Readfile(rootPath, meta_name = "file") {
             `);
             return;
         }
-        let filename = path.join(rootPath, meta.readFrom);
 
-        if (!ValidFilename(filename))
-            return emitter.emit("error", "非法路径名:" + filename);
+        if (!ValidFilename(meta.readFrom))
+            return emitter.emit("error", "非法路径名:" + meta.readFrom);
+
+        let filename = path.join(rootPath, meta.readFrom);
         let stats = await PathStats(filename);
         if (stats === null || !stats.isFile())
             emitter.emit("error", "文件" + filename + "不存在");

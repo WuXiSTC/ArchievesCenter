@@ -14,11 +14,10 @@ function SendFile(filename, sendStream, start, end) {//流式发送文件
     return new Promise((resolve, reject) => {
         let file = {readFrom: filename, start, end};
         let hash = {
-            Args: ['md5', 'sha1'],
+            Algs: ['md5', 'sha1'],
             onFinish: (hashs) => {
-                //TODO:此处写数据库
+                //TODO:此处写数据库，注意判断是读取了全部文件还是部分文件，部分文件的hash不可入库
                 resolve(hashs);
-                console.log("传输完成" + hashs)
             }
         };
         try {
