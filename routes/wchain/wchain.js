@@ -21,6 +21,54 @@ module.exports = function (options = OptionList) {
 
     let wchain = null;
 
+    let middlewares = [];//中间件列表
+
+    /**
+     * 添加一个中间件，中间件将在run中按use的先后顺序被调用
+     * 中间件的格式是一个函数function(meta, stream, next, emitter)，其参数为：
+     * meta 立即返回的元数据
+     * stream 输入流
+     * next 调用下一个中间件的函数
+     * emitter 从外部传入emitter，用于触发事件
+     *
+     * @param middleware 要添加的中间件
+     *
+     * 此函数将在后面成为wchain的成员函数
+     */
+    function use(middleware) {
+        middlewares.push(middleware)
+    }
+
+    /**
+     * 运行wchain，即按顺序调用前面wchain.use添加的中间件
+     * @param meta 输入立即返回的元数据
+     * @param stream 输入流
+     * @param next 最后一个中间件的next参量
+     *
+     * 此函数将在隔绝模式下成为wchain的成员函数，而非隔绝模式下的wchain不能直接调用此函数
+     */
+    function run(meta, stream, next = () => null) {
+        //运行，按use的先后顺序调用中间件并传递触发器，其中的meta为待处理的非流式数据
+        //chain是用于组装中间件调用链的循环变量
+        let chain = next;//调用链的末尾是下一个调用链
+        for (let i = middlewares.length - 1; i >= 0; i--) {
+            //从调用链的末尾开始依次构造调用链（一级一级地定义流的流动顺序）
+            let middleware = middlewares[i];
+            chain = (processedStream) => {
+                if (options.pause_at_begin && processedStream instanceof Readable) {//如果需要在一开始就停止
+                    //那就在每一层中间加一个暂停的水龙头
+                    let faucet = new StreamFaucet();
+                    faucet.pause();
+                    processedStream.pipe(faucet);
+                    processedStream = faucet;
+                }
+                middleware(meta, processedStream, chain, wchain.emitter);
+            }
+        }
+        chain(stream);
+    }
+
+
     if (options.isolate_emitter) {//如果使用隔绝模式
         /**
          * 以中间件函数模式定义的隔绝模式wchain
@@ -31,7 +79,7 @@ module.exports = function (options = OptionList) {
          */
         wchain = (meta, stream, next) => {
             //则使用内部定义的单独事件触发器（触发器的定义在下面）
-            wchain.run(meta, stream, next);//运行
+            run(meta, stream, next);//运行
         };
 
         wchain.emitter = new events.EventEmitter();//事件触发器
@@ -43,6 +91,7 @@ module.exports = function (options = OptionList) {
         wchain.on = (event, callback) => {
             wchain.emitter.on(event, callback);
         };
+        wchain.run = run;//隔绝模式可以调用wchain
     } else {//如果不使用隔绝模式
         //在非隔绝模式下，需要记录所有定义的监听器，在wchain()调用时才加入到外面来的那个emitter中
         //并且设置监听器时emitter可能还都没定义（在wchain()调用时才定义）
@@ -77,7 +126,7 @@ module.exports = function (options = OptionList) {
                 wchain.emitter = new events.EventEmitter();//则重新定义emitter并报警告
             }
             emitterCopy(eventList, wchain.emitter);
-            wchain.run(meta, stream, next);//运行
+            run(meta, stream, next);//运行
         };
 
         /**
@@ -101,50 +150,7 @@ module.exports = function (options = OptionList) {
         wchain.emitter.emit(event, ...args)
     };
 
-
-    let middlewares = [];//中间件列表
-
-    /**
-     * 添加一个中间件，中间件将按use的先后顺序被调用
-     * 中间件的格式是一个函数function(meta, stream, next, emitter)
-     * 函数参数
-     * meta 立即返回的元数据
-     * stream 输入流
-     * next 调用下一个中间件的函数
-     * emitter 从外部传入emitter，用于触发事件
-     *
-     * @param middleware 要添加的中间件
-     */
-    wchain.use = (middleware) => {
-        middlewares.push(middleware)
-    };
-
-    /**
-     * 运行wchain，即按顺序调用前面wchain.use添加的中间件
-     * @param meta 输入立即返回的元数据
-     * @param stream 输入流
-     * @param next 最后一个中间件的next参量
-     */
-    wchain.run = (meta, stream, next = () => null) => {
-        //运行，按use的先后顺序调用中间件并传递触发器，其中的meta立即返回
-        //chain是用于组装中间件调用链的循环变量
-        let chain = next;//调用链的末尾是下一个调用链
-        for (let i = middlewares.length - 1; i >= 0; i++) {
-            //从调用链的末尾开始依次构造调用链（一级一级地定义流的流动顺序）
-            let middleware = middlewares[i];
-            chain = (processedStream) => {
-                if (options.pause_at_begin && processedStream instanceof Readable) {//如果需要在一开始就停止
-                    //那就在每一层中间加一个暂停的水龙头
-                    let faucet = new StreamFaucet();
-                    faucet.pause();
-                    processedStream.pipe(faucet);
-                    processedStream = faucet;
-                }
-                middleware(meta, processedStream, chain, wchain.emitter);
-            }
-        }
-        chain(stream);
-    };
+    wchain.use = use;
 
     return wchain
 };

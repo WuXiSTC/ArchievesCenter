@@ -6,7 +6,7 @@ const OptionList = {
      * 如果此项为false，则使用自己独立的emitter，事件只能用自己的on监听到事件
      * 默认为false
      */
-    isolate_emitter: false,
+    isolate_emitter: true,
 
     /**
      * 启动时是否暂停流
