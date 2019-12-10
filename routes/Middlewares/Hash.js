@@ -26,16 +26,16 @@ function Hash(encoding, meta_name = "hash") {
             `);
             return next(meta_next, stream);
         }
-        let hashStreams = [];
+        let hashStreams = {};
         for (let hashAlg of meta.Algs) {
             let hashStream = crypto.createHash(hashAlg);
             stream.pipe(hashStream);
-            hashStreams.push(hashStream);
+            hashStreams[hashAlg] = hashStream;
         }
         stream.on('end', function () {
-            let hashResults = [];
-            for (let hashStream of hashStreams)
-                hashResults.push(hashStream.digest(encoding));
+            let hashResults = {};
+            for (let hashAlg in hashStreams)
+                hashResults[hashAlg] = hashStreams[hashAlg].digest(encoding);
             meta.onFinish(hashResults);
             end();
         });
