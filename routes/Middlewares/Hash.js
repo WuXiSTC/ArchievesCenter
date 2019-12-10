@@ -15,15 +15,16 @@ function Hash(encoding, meta_name = "hash") {
      * meta[meta_name].Algs-所需的hash算法
      * (Optional)meta[meta_name].onFinish-计算完成时调用的函数，输入形参为hash值计算结果
      */
-    return function (meta, stream, next, emitter) {
+    return function (meta, stream, next, end) {
+        let meta_next = meta;
         meta = meta[meta_name];
         //上一层输入的meta.Algs为要使用的hash算法名列表
         if (!meta || !(meta.Algs instanceof Array)) {
-            emitter.emit("error", `
+            console.warn("error", `
             meta[meta_name].Algs有误或不存在，Hash中间件未运行。
             请将您需要的Hash算法按顺序组成Array放入meta[meta_name].Algs中。
             `);
-            return next(stream);
+            return next(meta_next, stream);
         }
         let hashStreams = [];
         for (let hashAlg of meta.Algs) {
@@ -36,8 +37,9 @@ function Hash(encoding, meta_name = "hash") {
             for (let hashStream of hashStreams)
                 hashResults.push(hashStream.digest(encoding));
             meta.onFinish(hashResults);
+            end();
         });
-        next(stream);
+        next(meta_next, stream);
     };
 }
 

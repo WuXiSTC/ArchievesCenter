@@ -19,10 +19,11 @@ function Readfile(rootPath, meta_name = "file") {
      * (Optional)meta[meta_name].start-要从哪开始读
      * (Optional)meta[meta_name].end-要读到哪为止
      */
-    return async function (meta, stream, next, emitter) {//流式读取文件
+    return async function (meta, stream, next, end) {//流式读取文件
+        let meta_next = meta;
         meta = meta[meta_name];
         if (!meta || typeof meta.readFrom !== "string") {
-            emitter.emit("warn", `
+            console.warn(`
             meta.readFrom有误或不存在，Readfile中间件未运行。
             请将要写入的文件路径放入meta.readFrom中。
             `);
@@ -30,29 +31,23 @@ function Readfile(rootPath, meta_name = "file") {
         }
 
         if (!ValidFilename(meta.readFrom))
-            return emitter.emit("error", "非法路径名:" + meta.readFrom);
+            throw new Error("非法路径名:" + meta.readFrom);
 
         let filename = path.join(rootPath, meta.readFrom);
         let stats = await PathStats(filename);
         if (stats === null || !stats.isFile())
-            emitter.emit("error", "文件" + filename + "不存在");
+            throw new Error("文件" + filename + "不存在");
 
         let options = {flags: "r"};
         if (meta.start) {
-            try {
-                options.start = parseInt(meta.start)
-            } catch (e) {
-                emitter.emit("error", e);
-            }
+            options.start = parseInt(meta.start);
         }
         if (meta.end) {
-            try {
-                options.start = parseInt(meta.end)
-            } catch (e) {
-                emitter.emit("error", e);
-            }
+            options.start = parseInt(meta.end);
         }
-        next(fs.createReadStream(filename, options));
+        let read_stream = fs.createReadStream(filename, options);
+        read_stream.on("end", end);
+        next(meta_next, read_stream);
     }
 }
 

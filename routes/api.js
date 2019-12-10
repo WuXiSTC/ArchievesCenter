@@ -21,20 +21,19 @@ router.get('/*', async function (req, res, next) {
     try {
         res.setHeader('Accept-Ranges', 'bytes');
         let range = get_range_from_req(req);
-        let md5 = '';
         if (!range) {
             res.statusCode = 200;
-            md5 = JSON.stringify(await SendFile(filename, res));
-            console.log("Got: " + filename + " from start to end and its md5 is " + md5);
+            await SendFile(filename, res);
+            console.log("Got: " + filename + " from start to end");
         } else {
             res.statusCode = 206;
-            md5 = await SendFile(filename, res, range[0], range[1]);
-            console.log("Got: " + filename + " from " + range[0] + " to " + range[1] + " and its md5 is " + md5);
+            await SendFile(filename, res, range[0], range[1]);
+            console.log("Got: " + filename + " from " + range[0] + " to " + range[1]);
         }
         return res.end()
     } catch (e) {
         res.statusCode = 404;
-        res.end(e.toString());
+        return res.end(e.toString());
     }
 });
 
