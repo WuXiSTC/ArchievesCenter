@@ -34,7 +34,7 @@ function Hash(encoding, meta_name = "hash") {
         }
         stream.on('end', function () {
             let hashResults = {};
-            for (let hashAlg in hashStreams)
+            for (let hashAlg of Object.keys(hashStreams))
                 hashResults[hashAlg] = hashStreams[hashAlg].digest(encoding);
             meta.onFinish(hashResults);
             end();
