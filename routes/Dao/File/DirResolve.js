@@ -2,7 +2,12 @@ const fs = require("fs");
 const path = require("path");
 const pathStats = require("./PathStats");
 
-async function mkdirs(p) {//递归创建文件夹
+/**
+ * 给一个文件创建文件夹
+ * @param p 要给哪个文件创文件夹
+ * @returns {Promise<*>}
+ */
+async function mkdirs(p) {
     return new Promise(async (resolve, reject) => {
         try {
             let stats = await pathStats(p);//检查目标文件夹路径
