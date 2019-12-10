@@ -16,30 +16,32 @@ const DirResolve = Dao.DirResolve;
 function Writefile(rootPath, meta_name = "file") {
     /**
      * 写文件的中间件，输入：
-     * meta.writeFilename-要写入的文件路径
+     * meta.writeTo-要写入的文件路径
      */
-    return async function (meta, stream, next, emitter) {//流式接收文件
+    return async function (meta, stream, next, end) {//流式接收文件
+        let meta_next = meta;
         meta = meta[meta_name];
-        if (!meta || typeof meta.writeFilename !== "string") {
-            emitter.emit("warn", `
-            meta.writeFilename有误或不存在，Writefile中间件未运行。
-            请将要写入的文件路径放入meta.writeFilename中。
+        if (!meta || typeof meta.writeTo !== "string") {
+            console.warn(`
+            meta.writeTo有误或不存在，Writefile中间件未运行。
+            请将要写入的文件路径放入meta.writeTo中。
             `);
             return next(stream);
         }
-        let filename = path.join(rootPath, meta.writeFilename);
 
-        if (!ValidFilename(filename))
-            return emitter.emit("error", "非法路径名:" + filename);
+        if (!ValidFilename(meta.writeTo))
+            throw new Error("非法路径名:" + meta.writeTo);
 
+        let filename = path.join(rootPath, meta.writeTo);
         await DirResolve(filename);//解决路径不存在的问题
         let stats = await PathStats(filename);//检查文件是否存在
         if (stats !== null)//存在则报错
-            return emitter.emit("error", "文件" + filename + "已存在");
+            throw new Error("文件" + filename + "已存在");
 
         let writeStream = fs.createWriteStream(filename, {flags: "w"});
+        stream.on("end", end);
         stream.pipe(writeStream);
-        return next(stream);
+        return next(meta_next, stream);
 
     }
 }
