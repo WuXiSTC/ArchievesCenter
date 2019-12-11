@@ -38,13 +38,7 @@ function Readfile(rootPath, meta_name = "file") {
         if (stats === null || !stats.isFile())
             throw new Error("文件" + filename + "不存在");
 
-        let options = {flags: "r"};
-        if (meta.start) {
-            options.start = parseInt(meta.start);
-        }
-        if (meta.end) {
-            options.start = parseInt(meta.end);
-        }
+        let options = {flags: "r", start: meta.start, end: meta.end};
         let read_stream = fs.createReadStream(filename, options);
         read_stream.on("end", end);
         next(meta_next, read_stream);

@@ -12,7 +12,7 @@ client.on("error", (e) => {
     console.error("Redis 连接出错: " + e);
 });
 
-const supported_commands = ['hset', 'sadd', 'smembers'];
+const supported_commands = ['hset', 'hget', 'sadd', 'smembers', 'sunion'];
 
 function Connection() {
     for (let command of supported_commands)
