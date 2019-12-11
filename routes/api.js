@@ -24,7 +24,7 @@ router.get('/*', async function (req, res, next) {
         if (!range) {
             res.statusCode = 200;
             await SendFile(filename, res);
-            console.log("Got: " + filename + " from start to end");
+            console.log("Sent: " + filename + " from start to end");
         } else {
             res.statusCode = 206;
             await SendFile(filename, res, range[0], range[1]);
@@ -39,9 +39,15 @@ router.get('/*', async function (req, res, next) {
 
 router.post('/*', async function (req, res, next) {
     let filename = req.params[0];
+    let hash_to_find = {};
     try {
-        let hashs = JSON.stringify(await RecvFile(filename, req));
-        console.log("Put: " + filename + " and its checksum is " + hashs);
+        try {
+            hash_to_find = JSON.parse(req.query.hash);
+        } catch (e) {
+            console.log("请求的hash值有误")
+        }
+        let hashs = JSON.stringify(await RecvFile(filename, req, hash_to_find));
+        console.log("Received: " + filename + " and its checksum is " + hashs);
         res.statusCode = 200;
         return res.end(hashs)
     } catch (e) {

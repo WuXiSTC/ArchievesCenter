@@ -1,24 +1,29 @@
 const wchain = require("wchain");
+const ReadExistsfileMiddleware = require("../Middlewares/FastUpload");
 const WritefileMiddleware = require("../Middlewares/Writefile");
 const HashMiddleware = require("../Middlewares/Hash");
 const dir = require("./config").dir;
 
 let RecvFileChain = wchain();
-//TODO:此处加秒传
+RecvFileChain.use(ReadExistsfileMiddleware("hash_to_find"));
 RecvFileChain.use(HashMiddleware("hex", "hash"));
 RecvFileChain.use(WritefileMiddleware(dir, "file"));
 
-function RecvFile(filename, recvStream) {//流式接收文件
+const ChecksumSET = require("../Dao/index").ChecksunSET;
+
+function RecvFile(filename, recvStream, hash_to_find) {//流式接收文件
     let file = {writeTo: filename};
     let hash = {
         Algs: ['md5', 'sha1'],
         onFinish: (hashs) => {
-            //TODO:此处写数据库
-            console.log(hashs);
+            ChecksumSET(hashs, filename)
+                .catch(e => {
+                    console.log("数据库写入失败: " + e)
+                });
         }
     };
     return new Promise((resolve, reject) => {
-        RecvFileChain.run({file, hash}, recvStream, () => null, resolve).catch(reject);
+        RecvFileChain.run({file, hash, hash_to_find}, recvStream, () => null, resolve).catch(reject);
     });
 }
 
