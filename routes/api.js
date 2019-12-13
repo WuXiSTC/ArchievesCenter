@@ -41,11 +41,7 @@ router.post('/*', async function (req, res, next) {
     let filename = req.params[0];
     let hash_to_find = {};
     try {
-        try {
-            hash_to_find = JSON.parse(req.query.hash);
-        } catch (e) {
-            console.log("请求的hash值有误")
-        }
+        hash_to_find = req.query;
         let hashs = JSON.stringify(await RecvFile(filename, req, hash_to_find));
         console.log("Received: " + filename + " and its checksum is " + hashs);
         res.statusCode = 200;

@@ -5,7 +5,7 @@ const HashMiddleware = require("../Middlewares/Hash");
 const dir = require("./config").dir;
 
 let RecvFileChain = wchain();
-//RecvFileChain.use(ReadExistsfileMiddleware("hash_to_find"));
+RecvFileChain.use(ReadExistsfileMiddleware("hash_to_find"));
 RecvFileChain.use(HashMiddleware(['md5', 'sha1'], "hex", "hash"));
 RecvFileChain.use(WritefileMiddleware(dir, "file"));
 
