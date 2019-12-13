@@ -22,10 +22,8 @@ function Writefile(rootPath, meta_name = "file") {
         let meta_next = meta;
         meta = meta[meta_name];
         if (!meta || typeof meta.writeTo !== "string") {
-            console.warn(`
-            meta.writeTo有误或不存在，Writefile中间件未运行。
-            请将要写入的文件路径放入meta.writeTo中。
-            `);
+            console.warn(['meta.writeTo有误或不存在，Writefile中间件未运行。',
+                '请将要写入的文件路径放入meta.writeTo中。'].join(''));
             return next(stream);
         }
 

@@ -23,10 +23,8 @@ function Readfile(rootPath, meta_name = "file") {
         let meta_next = meta;
         meta = meta[meta_name];
         if (!meta || typeof meta.readFrom !== "string") {
-            console.warn(`
-            meta.readFrom有误或不存在，Readfile中间件未运行。
-            请将要写入的文件路径放入meta.readFrom中。
-            `);
+            console.warn(['meta.readFrom有误或不存在，Readfile中间件未运行。',
+                '请将要写入的文件路径放入meta.readFrom中。'].join(''));
             return;
         }
 
