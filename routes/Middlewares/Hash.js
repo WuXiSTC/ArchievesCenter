@@ -21,8 +21,7 @@ function Hash(algs, encoding, meta_name = "hash") {
         meta = meta[meta_name];
         //上一层输入的meta.Algs为要使用的hash算法名列表
         if (!meta || !(algs instanceof Array)) {
-            console.warn("error", `
-            algs有误或不存在，Hash中间件未运行。
+            console.warn(`algs有误或不存在，Hash中间件未运行。
             请将您需要的Hash算法按顺序组成Array放入meta[meta_name].Algs中。
             `);
             return next(meta_next, stream);
