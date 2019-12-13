@@ -5,8 +5,8 @@ const HashMiddleware = require("../Middlewares/Hash");
 const dir = require("./config").dir;
 
 let RecvFileChain = wchain();
-RecvFileChain.use(ReadExistsfileMiddleware("hash_to_find"));
-RecvFileChain.use(HashMiddleware("hex", "hash"));
+//RecvFileChain.use(ReadExistsfileMiddleware("hash_to_find"));
+RecvFileChain.use(HashMiddleware(['md5', 'sha1'], "hex", "hash"));
 RecvFileChain.use(WritefileMiddleware(dir, "file"));
 
 const ChecksumSET = require("../Dao/index").ChecksunSET;
@@ -14,7 +14,6 @@ const ChecksumSET = require("../Dao/index").ChecksunSET;
 function RecvFile(filename, recvStream, hash_to_find) {//流式接收文件
     let file = {writeTo: filename};
     let hash = {
-        Algs: ['md5', 'sha1'],
         onFinish: (hashs) => {
             ChecksumSET(hashs, filename)
                 .catch(e => {

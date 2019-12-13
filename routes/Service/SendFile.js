@@ -5,7 +5,7 @@ const dir = require("./config").dir;
 
 let SendFileChain = wchain();
 SendFileChain.use(ReadfileMiddleware(dir, "file"));
-SendFileChain.use(HashMiddleware('hex', "hash"));
+SendFileChain.use(HashMiddleware(['md5', 'sha1'], 'hex', "hash"));
 
 const ChecksumSET = require("../Dao/index").ChecksunSET;
 
@@ -14,7 +14,6 @@ function SendFile(filename, sendStream, start, end) {//流式发送文件
     if (end) end = parseInt(end);
     let file = {readFrom: filename, start, end};
     let hash = {
-        Algs: ['md5', 'sha1'],
         onFinish: (hashs) => {
             if (!(start || end)) {//部分文件的hash不能入库
                 ChecksumSET(hashs, filename)
