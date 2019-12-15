@@ -11,7 +11,7 @@ const ChecksumDEL = Dao.ChecksunDEL;
  * @returns {Function} 返回一个秒传中间件
  * @constructor
  */
-function ReadExistsfile(meta_name, overlap_threshold = 2) {
+function FastUpload(meta_name, overlap_threshold = 2) {
     return async function (meta, stream, next, end) {
         let hash_to_find = meta[meta_name];
         if (Object.keys(hash_to_find).length < overlap_threshold) {
@@ -34,4 +34,4 @@ function ReadExistsfile(meta_name, overlap_threshold = 2) {
     }
 }
 
-module.exports = ReadExistsfile;
+module.exports = FastUpload;
