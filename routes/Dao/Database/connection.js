@@ -1,6 +1,8 @@
 const redis = require("redis");
 
-let client = redis.createClient("redis://127.0.0.1:9221", {
+const redis_addr = process.env.npm_config_pika ? process.env.npm_config_pika : "redis://127.0.0.1:9221";
+
+let client = redis.createClient(redis_addr, {
     retry_strategy: function (options) {
         if (options.error && options.error.code === 'ECONNREFUSED')
             console.error('连接被拒绝');
