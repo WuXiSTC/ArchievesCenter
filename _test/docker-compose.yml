@@ -1,7 +1,9 @@
-version: "3"
+version: "3.4"
 services:
   app:
-    build: ..
+    build: 
+      context: ..
+      network: host
     ports:
       - "3000:3000"
     volumes:
@@ -9,7 +11,9 @@ services:
     command: npm start --dir=/data --pika=redis://pika-1:9221
 
   app-1:
-    build: ..
+    build: 
+      context: ..
+      network: host
     ports:
       - "3001:3000"
     volumes:
@@ -28,7 +32,3 @@ services:
       - "9222:9221"
     volumes:
       - "./pika-2:/pika"
-
-networks:
-  proxy:
-    driver: bridge
