@@ -6,8 +6,8 @@ services:
       network: host
     ports:
       - "3000:3000"
-    volumes:
-      - "./files:/data"
+    #volumes:
+    #  - "./files:/data"
     command: npm start --dir=/data --pika=redis://pika-1:9221
 
   app-1:
@@ -16,19 +16,19 @@ services:
       network: host
     ports:
       - "3001:3000"
-    volumes:
-      - "./files:/data"
+    #volumes:
+    #  - "./files:/data"
     command: npm start --dir=/data --pika=redis://pika-1:9221
 
   pika-1:
     image: wxstc/pika-alpine
     ports:
       - "9221:9221"
-    volumes:
-      - "./pika-1:/pika"
+    #volumes:
+    #  - "./pika-1:/pika"
   pika-2:
     image: wxstc/pika-debian
     ports:
       - "9222:9221"
-    volumes:
-      - "./pika-2:/pika"
+    #volumes:
+    #  - "./pika-2:/pika"
