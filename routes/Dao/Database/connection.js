@@ -21,6 +21,7 @@ function Connection() {
         this[command] = function () {
             let args = arguments;
             return new Promise((resolve, reject) => {
+                if (!client.connected) return resolve([]);
                 client[command](...args, (error, result) => {
                     if (error) return reject(error);
                     return resolve(result)
